@@ -1,16 +1,10 @@
-/**
- * @author    ThemesBuckets <themebucketbd@gmail.com>
- * @copyright Copyright (c) 2018
- * @license   Fulcrumy
- * 
- * This File Represent Sign In Component
- * File path - '../../../src/pages/authentication/sign-in/sign-in'
- */
 
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController } from 'ionic-angular';
+
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, MenuController, AlertController } from 'ionic-angular';
 import { FormBuilder, Validators } from '@angular/forms';
-
+import { AngularFireAuth } from '@angular/fire/auth';
+import firebase from 'firebase'; 
 
 @IonicPage()
 @Component({
@@ -18,32 +12,29 @@ import { FormBuilder, Validators } from '@angular/forms';
   templateUrl: 'sign-in.html',
 })
 export class SignInPage {
+  @ViewChild ('username')user;
+  @ViewChild ('userpass')pass;
+  
 
-  // Sign In Form
   signInForm: any;
 
-  // Email Validation Regex Patter
+
   emailPattern: string = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$";
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private formBuilder: FormBuilder,
-    public menuCtrl: MenuController) {
+    public menuCtrl: MenuController,
+    private fire: AngularFireAuth,
+    public alertCtrl:AlertController) {
     this.menuCtrl.enable(false); // Disable SideMenu
   }
 
-  /** Do any initialization */
+
   ngOnInit() {
     this.formValidation();
   }
 
-  /***
-   * --------------------------------------------------------------
-   * Form Validation
-   * --------------------------------------------------------------
-   * @method    formValidation    This function build a Login form with validation
-   * 
-   */
   formValidation() {
     this.signInForm = this.formBuilder.group({
       email: ['', Validators.compose([Validators.pattern(this.emailPattern), Validators.required])],
@@ -51,33 +42,45 @@ export class SignInPage {
     });
   }
 
-  /**
-   * --------------------------------------------------------------
-   * Login Action
-   * --------------------------------------------------------------
-   * @method doLogin    Login action just redirect to your home page.
-   * 
-   * ** You can call any backend API into this function. **
-   */
+  alert(message : string)
+    {
+      this.alertCtrl.create({
+        title:'Alert',
+        subTitle:message,
+        buttons:['OK']
+      }).present();
+    }
   doLogin() {
-    this.navCtrl.setRoot('HomePage');
+    this.fire.auth.signInWithEmailAndPassword(this.user.value,this.pass.value)
+    .then(data =>{this.navCtrl.setRoot('HomePage');})
+    .catch(error =>{this.alert(error.message)})
+    
   }
 
-  /**
-   * -------------------------------------------------------------
-   * Go to Forget Password Page
-   * -------------------------------------------------------------
-   */
   goToForgetPasswordPage() {
     this.navCtrl.setRoot('ForgetPasswordPage');
   }
 
-  /**
-   * -------------------------------------------------------------
-   * Go to Sign Up Page
-   * -------------------------------------------------------------
-   */
   goToSignUpPage() {
     this.navCtrl.setRoot('SignUpPage');
+  }
+
+  logInWithFacebook()
+  {
+    console.log("here...");
+    
+    this.fire.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider())
+    this.navCtrl.setRoot('HomePage');
+  }
+  
+  logInWithGoogle()
+  {
+    this.fire.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    this.navCtrl.setRoot('HomePage');
+  }
+  
+  logInWithTwitter()
+  {
+
   }
 }

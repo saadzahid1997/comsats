@@ -1,15 +1,10 @@
-/**
- * @author    ThemesBuckets <themebucketbd@gmail.com>
- * @copyright Copyright (c) 2018
- * @license   Fulcrumy
- * 
- * This File Represent Sign Up Component
- * File path - '../../../src/pages/authentication/sign-up/sign-up'
- */
 
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController } from 'ionic-angular';
+
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, MenuController, AlertController } from 'ionic-angular';
 import { FormBuilder, Validators } from '@angular/forms';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/database'
 
 @IonicPage()
 @Component({
@@ -18,32 +13,39 @@ import { FormBuilder, Validators } from '@angular/forms';
 })
 export class SignUpPage {
 
-  // Registration Form
+  @ViewChild('username') user;
+  @ViewChild('userpass') pass;
+
   registrationForm: any;
 
-  // Email Validation Regex Patter
-  emailPattern: string = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$";
 
+  emailPattern: string = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$";
+  userRef$: AngularFireList<any>
+  mapsApiLoader: any;
+  ngZone: any;
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private formBuilder: FormBuilder,
-    public menuCtrl: MenuController) {
+    public menuCtrl: MenuController,
+    private fire: AngularFireAuth,
+    public alertCtrl: AlertController,
+    private database: AngularFireDatabase) {
     this.menuCtrl.enable(false); // Disable SideMenu
+    this.userRef$ = this.database.list('users');
   }
 
-  /** Do any initialization */
   ngOnInit() {
     this.formValidation();
   }
 
-  /***
-   * --------------------------------------------------------------
-   * Form Validation
-   * --------------------------------------------------------------
-   * @method    formValidation    This function build a Registration form with validation
-   * 
-   */
+  alert(message: string) {
+    this.alertCtrl.create({
+      title: 'Alert',
+      subTitle: message,
+      buttons: ['OK']
+    }).present();
+  }
   formValidation() {
     this.registrationForm = this.formBuilder.group({
       name: ['', Validators.compose([Validators.minLength(6), Validators.required])],
@@ -52,24 +54,43 @@ export class SignUpPage {
     });
   }
 
-  /**
-   * --------------------------------------------------------------
-   * Registration Action
-   * --------------------------------------------------------------
-   * @method doRegistration    Registration action just redirect to your home page.
-   * 
-   * ** You can call any backend API into this function. **
-   */
   doRegistration() {
-    this.navCtrl.setRoot('HomePage');
+
+    this.fire.auth.createUserWithEmailAndPassword(this.user.value, this.pass.value)
+      .then(() => {
+        this.navCtrl.setRoot('HomePage');
+      })
+      .catch(error => {
+        this.alert(error.message);
+      })
+  }
+  userLocation() {
+    // this.mapsApiLoader.load().then(() => {
+    //   let nativeHomeInputBox = document.getElementById('userAddress').getElementsByTagName('input')[0];
+    //   let autocomplete = new google.maps.places.Autocomplete(nativeHomeInputBox, {
+    //     types: ["geocode"]
+    //   });
+    //   //aautocomplete.setComponentRestrictions({ 'country': ['pk'] })
+    //   autocomplete.addListener("place_changed", () => {
+    //     this.ngZone.run(() => {
+    //       let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+    //       this.user.userLocation = place.formatted_address;
+    //       //this.hotelLocationRef = place.formatted_address;
+    //     });
+    //   });
+    // });
   }
 
-  /**
-   * --------------------------------------------------------------
-   * Go To Login Page
-   * --------------------------------------------------------------
-   * @method goToLoginPage    This action button just redirect to your login page.
-   */
+  addUser() {
+    this.userRef$.push({
+      userFName: this.user.userFName,
+      userLName: this.user.userLName,
+      userMail: this.user.userMail,
+      userPass: this.user.userPass,
+      userAddress: this.user.userAddress ? this.user.userAddress : 'Rawalpindi'
+    });
+  }
+
   goToLoginPage() {
     this.navCtrl.setRoot('SignInPage');
   }

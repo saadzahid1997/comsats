@@ -23,19 +23,7 @@ export class LandingPage {
   // Slider Data
   slides = [
     {
-      text: 'Your All Time Trusted Travel Partner, Over Thousand of Happy Client',
-      imageUrl: 'assets/imgs/background/img3.jpeg',
-    },
-    {
-      text: 'Find the best deals of Flight, Hotels, Car, Bus, Train, Vacation, Cruise and Activities',
-      imageUrl: 'assets/imgs/background/img1.jpeg'
-    },
-    {
-      text: 'Filter for reviews, star categories, ratings and much more',
-      imageUrl: 'assets/imgs/background/img4.jpeg',
-    },
-    {
-      text: 'Book the best trip on your demand',
+      text: 'Visit the best place on your demand',
       imageUrl: 'assets/imgs/background/img2.jpeg',
     }
   ];

@@ -1,40 +1,28 @@
-<!-- 
-  - @author    ThemesBuckets <themebucketbd@gmail.com>
-  - @copyright Copyright (c) 2018
-  - @license   Fulcrumy
--->
-<!-- Langding Page  -->
 
-<!-- Header  -->
 <ion-header no-border>
-  <ion-navbar transparent>
-    <!-- Skip Button  -->
-    <ion-buttons right>
-      <button ion-button color="light" *ngIf="slideIndex < slides.length - 1" (click)="goToHomePage()">SKIP</button>
-    </ion-buttons>
-  </ion-navbar>
+  
 </ion-header>
 
-<!-- Content  -->
+
 <ion-content fullscreen="true" class="container">
 
-  <!-- Slider  -->
+
   <ion-slides #slider pager="true" autoplay="3000" (ionSlideWillChange)="onSlideChanged()">
-    <!-- Landing Page Infos  -->
+
     <ion-slide *ngFor="let slide of slides" class="slide-background" [ngStyle]="{'background-image': 'url(' + slide.imageUrl +')'}">
       <div class="slide-text-content">
 
-        <!-- Company Info  -->
+
         <div class="company-info animated fadeInDown">
 
-          <!-- Logo  -->
+
           <img src="assets/imgs/logo.png">
 
-          <!-- Company Name  -->
-          <h2>Travel Agency</h2>
 
-          <!-- Some Text  -->
-          <div class="slide-text">
+          <h2>Travel GB</h2>
+
+
+          <div>
             <p padding>{{slide.text}}</p>
           </div>
         </div>
